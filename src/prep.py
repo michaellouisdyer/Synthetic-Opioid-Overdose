@@ -44,6 +44,7 @@ def get_data():
     mcd_wide = pd.merge(pop_df, mcd_pivot, on =['year','county_code']) # add the two together
     census = census_data()
     mcd_main =  pd.merge(mcd_wide, census, on=['year','county_code'])
+    mcd_main['unemployment_rate'] = pd.to_numeric(mcd_main['unemployment_rate'], errors='coerce')
     mcd_2015 = mcd_main.query('year == 2015') #subset for 2015
     mcd_2016 = mcd_main.query('year == 2016') #subset for 2015
     return mcd, mcd_main, mcd_wide, mcd_2015, mcd_2016
