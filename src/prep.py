@@ -35,16 +35,54 @@ def census_data():
     df_employment.columns = ['year','county_code', 'unemployment_rate']
 
     return df_income.merge(df_poverty, on=['year','county_code']).merge(df_employment, on=['year','county_code'])
-    # return df_income
-# def main():
-mcd = read_data('data/MCD_2010_2016_T40.txt', delim='\t')
-mcd = mcd[pd.notnull(mcd['year'])] #remove footer
-mcd_pivot = mcd.pivot_table(index=['year','county_code'], columns='multiple_cause_of_death_code', values='deaths').reset_index() #wide to long
-pop_df = mcd[['year','county_code', 'population']].drop_duplicates() #find population for each county
-mcd_wide = pd.merge(pop_df, mcd_pivot, on =['year','county_code']) # add the two together
-census = census_data()
-mcd_main =  pd.merge(mcd_wide, census, on=['year','county_code'])
-mcd_2015 = mcd_main.query('year == 2015') #subset for 2015
-mcd_2016 = mcd_main.query('year == 2016') #subset for 2015
-# mcd_2015_full = pd.merge(mcd_2015, census_data, on='county_code')
-# df = df.query('State == Denver or id == 134233423')
+
+def get_data():
+    mcd = read_data('data/MCD_2010_2016_T40.txt', delim='\t')
+    mcd = mcd[pd.notnull(mcd['year'])] #remove footer
+    mcd_pivot = mcd.pivot_table(index=['year','county_code'], columns='multiple_cause_of_death_code', values='deaths').reset_index() #wide to long
+    pop_df = mcd[['year','county_code', 'population']].drop_duplicates() #find population for each county
+    mcd_wide = pd.merge(pop_df, mcd_pivot, on =['year','county_code']) # add the two together
+    census = census_data()
+    mcd_main =  pd.merge(mcd_wide, census, on=['year','county_code'])
+    mcd_2015 = mcd_main.query('year == 2015') #subset for 2015
+    mcd_2016 = mcd_main.query('year == 2016') #subset for 2015
+    return mcd_wide, mcd_2015, mcd_2016
+
+    ### eda
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+sns.set()
+#change default font sizes
+mpl.rcParams.update({
+    'font.size'           : 20.0,
+    'axes.titlesize'      : 'large',
+    'axes.labelsize'      : 'medium',
+    'xtick.labelsize'     : 'medium',
+    'ytick.labelsize'     : 'medium',
+    'legend.fontsize'     : 'medium',
+})
+from prep import get_data
+mcd_wide, mcd_2015, mcd_2016 =  get_data()
+# dfs = get_data()
+
+T40_dict = {'T40.1': 'Heroin',
+    'T40.2': 'Other opioids',
+    'T40.3': 'Methadone',
+    'T40.4': 'Other synthetic narcotics',
+    'T40.5': 'Cocaine',
+    'T40.6': 'Other and unspecified narcotics',
+    'T40.7': 'Cannabis (derivatives'}
+
+def plot_years():
+    fig, ax =  plt.subplots()
+    drug_X  = drugs_years.drop(columns=['county_code', 'population'])
+    ax.plot(drug_X)
+    ax.set_ylabel('Yearly Deaths')
+    ax.set_title('Overdoses by Drug Type, U.S.')
+    ax.legend([T40_dict[col] for col in drug_X.columns])
+
+drugs_years = mcd_wide.groupby('year').sum()
+plot_years()
+plt.show()
