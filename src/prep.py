@@ -23,7 +23,7 @@ def census_data():
     df_income_15['year'] = 2015.0
     df_income_16['year'] = 2016.0
     df_income = df_income_15.append(df_income_16)
-    df_income = df_income[['year','id2', 'households;_estimate;_total']]
+    df_income = df_income[['year','id2', 'households;_estimate;_mean_income_(dollars)']]
     df_income.columns = ['year','county_code', 'household_income']
 
     df_employment_15 = read_data('data/acs_data/ACS_15_1YR_S2301_with_ann.csv', delim = delim, encoding=encode, skiprow=1)
