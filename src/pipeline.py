@@ -19,37 +19,59 @@ from sklearn.linear_model.coordinate_descent import LinearModelCV
 from statsmodels.graphics.gofplots import qqplot
 from scipy.stats.mstats import normaltest
 from linear_models import LinearDataset
+from tabulate import tabulate
 
 def model_comparison(X,y,models):
+    """Takes a list of LinearDataset models, as well as their X and y data and returns two dataframes, one describing their coefficients, and another describing their errors"""
+
     fig, axes = plt.subplots(1,len(models))
     coef_matrix = pd.DataFrame(index = X.columns)
     error_matrix = pd.DataFrame(index =['Train_R2','Test_R2', 'Test_RSS', 'Train_RSS'])
 
     for model in models:
+        #initializes the models
         model.set_up()
+
         coef_matrix[model.name] = model.get_coefs()
+
         error_matrix[model.name] = model.test_and_train_errs()
     return coef_matrix, error_matrix
 
+def all_plot_actual_predicted(models):
+    fig, axes = plt.subplots(2,2)
+    axes = axes.flatten()
+    for i, model in enumerate(models):
+        model.plot_actual_predicted(axes[i])
+    plt.show()
+
     #main
-mcd, mcd_main, mcd_wide, mcd_2015, mcd_2016 =  get_data()
+mcd_main =  get_data()
 T40 = drop_nulls(mcd_main,['T40.4'])
 T40_complete = impute_df(T40, KNN(5))
 
 y = T40_complete['T40.4']
 X = T40_complete.drop(columns=['T40.4', 'year', 'county_code'])
 # X = T40_complete[['T40.5','household_income', 'poverty_rate', 'unemployment_rate']]
-l1_ratio = np.linspace(0.1,1,11)
+
+l1_ratio = np.linspace(0.1,1,50)
+cv=10
+# alphas = [0.1,0.5,1,5,10]
+alphas = np.linspace(0.1,100,50)
 elastic = LinearDataset(X,y,ElasticNetCV(l1_ratio=l1_ratio), name='ElasticNet')
 
-ridge = LinearDataset(X,y,RidgeCV(), name='Ridge')
-lasso = LinearDataset(X,y,LassoCV(), name='Lasso')
+ridge = LinearDataset(X,y,RidgeCV(cv=cv, alphas =alphas), name='Ridge')
+lasso = LinearDataset(X,y,LassoCV(cv=cv), name='Lasso')
+linear = LinearDataset(X,y,LinearRegression(), name='linear')
 
-models = [elastic, ridge, lasso]
+models = [linear, elastic, ridge, lasso]
 
 coef_matrix, error_matrix = model_comparison(X, y, models)
 print('\n', coef_matrix)
 print('\n', error_matrix)
+
+all_plot_actual_predicted(models)
+# print(tabulate(coef_matrix.round(3), headers='keys', tablefmt='pipe'))
+# print(tabulate(error_matrix.round(3), headers='keys', tablefmt='pipe'))
 
 
 # fig, ax = plt.subplots()

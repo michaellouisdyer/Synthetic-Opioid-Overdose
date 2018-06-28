@@ -28,8 +28,11 @@ County analysis showed that the highest overall MCD drug deaths were in Kentucky
 
 
 A scatter matrix comparing distributions for T40 MCD codes signified linear relationships between many of the codes; this is expected as each category is not exclusive and an autopsy can often list more than one drug as an MCD. Notable relationships are seen between T40.2 (Methadone ) and T40.3(Other Opioids), and T40.4 (Synthetic Opioids) and T40.5 (Cocaine).
+
 <img src="images/T40_scatter.png" width=800>
+
 For census data, a scatter matrix revealed a relationship between poverty rate and unemployment_rate, as well as a relationship of those two with the log of households income(taken because income was not normally distributed)
+
 <img src="images/census_scatter_matrix.png" width=800>
 
 ## Hypothesis Testing
@@ -56,3 +59,32 @@ Multicolinearity was tested by computing the Variance Inflation Factor for each 
 |   household_income |    2.15 |
 |       poverty_rate |    2.67 |
 |  unemployment_rate |    1.62 |
+
+
+Cross validation of hyperparameters (n_folds = 10) of ridge, lasso and elastic net models was run and fit scores were computed for each and compared to the standard linear model
+
+### Coefficients
+
+|                   |   LinearRegression{} |   ElasticNetCV{'a': 0.031, 'l1_ratio': 0.1} |   RidgeCV{'a': 10.0} |   LassoCV{'a': 0.019} |
+|:------------------|---------------------:|--------------------------------------------:|---------------------:|----------------------:|
+| population        |               -0.275 |                                      -0.325 |               -0.258 |                -0.22  |
+| T40.1             |                0.202 |                                       0.253 |                0.262 |                 0.206 |
+| T40.2             |                0.252 |                                       0.184 |                0.195 |                 0.19  |
+| T40.3             |               -0.074 |                                      -0.013 |                0.019 |                -0     |
+| T40.5             |                0.454 |                                       0.42  |                0.362 |                 0.385 |
+| T40.6             |                0.053 |                                       0.045 |                0.051 |                 0.022 |
+| T40.7             |               -0.052 |                                      -0.014 |               -0.02  |                -0     |
+| household_income  |                0.076 |                                       0.06  |                0.053 |                 0.049 |
+| poverty_rate      |               -0.004 |                                      -0.045 |               -0.034 |                -0.021 |
+| unemployment_rate |               -0.027 |                                       0.019 |               -0.017 |                -0     |
+
+### Fit Scores
+
+|           |   LinearRegression{} |   ElasticNetCV{'a': 0.031, 'l1_ratio': 0.1} |   RidgeCV{'a': 10.0} |   LassoCV{'a': 0.019} |
+|:----------|---------------------:|--------------------------------------------:|---------------------:|----------------------:|
+| Train_R2  |                0.556 |                                       0.539 |                0.539 |                 0.542 |
+| Test_R2   |                0.425 |                                       0.485 |                0.492 |                 0.458 |
+| Test_RSS  |                0.316 |                                       0.327 |                0.326 |                 0.327 |
+| Train_RSS |                0.366 |                                       0.33  |                0.328 |                 0.342 |
+
+Coefficients revealed that cocaine deaths were the main predictor of synthetic deaths in 2015 and 2016; followed by heroin and other opioids. In order to increase predictive power of census data and to increase model fit, more data was added from census data

@@ -12,17 +12,17 @@ from statsmodels.stats.anova import anova_lm
 from statsmodels.formula.api import ols
 from fancyimpute import SimpleFill, KNN, SoftImpute, IterativeSVD, MICE, MatrixFactorization, NuclearNormMinimization, BiScaler
 from pandas.plotting import scatter_matrix
-from prep import get_data, read_data
+from prep import get_all_data, read_data
 from sklearn.preprocessing import StandardScaler
 sns.set()
 #change default font sizes
 mpl.rcParams.update({
-    'font.size'           : 20.0,
-    'axes.titlesize'      : 'large',
-    'axes.labelsize'      : 'medium',
-    'xtick.labelsize'     : 'medium',
-    'ytick.labelsize'     : 'medium',
-    'legend.fontsize'     : 'medium',
+    'font.size'           : 10.0,
+    'axes.titlesize'      : 'small',
+    'axes.labelsize'      : 'small',
+    'xtick.labelsize'     : 'small',
+    'ytick.labelsize'     : 'small',
+    'legend.fontsize'     : 'small',
 })
 
 T40_dict = {'T40.1': 'Heroin',
@@ -82,7 +82,20 @@ def determine_impute(df):
         MSE[str(i)+alg.__class__.__name__] =  alg_mse
     return MSE
 
-mcd, mcd_main, mcd_wide, mcd_2015, mcd_2016 =  get_data()
+def nice_scatter_matrix(df, title):
+    axs = scatter_matrix(df)
+    plt.suptitle(title, fontsize=20)
+    n = len(df.columns)
+    for x in range(n):
+        for y in range(n):
+            # to get the axis of subplots
+            ax = axs[x, y]
+            # to make y axis name horizontal
+            ax.yaxis.label.set_rotation(45)
+            # to make sure y axis names are outside the plot area
+            ax.yaxis.labelpad = 50
+
+mcd, mcd_main, mcd_wide=  get_all_data()
 county_dict = dict(mcd[['county_code','county']].drop_duplicates().values)
 
 # def find_top_counties():
@@ -123,6 +136,8 @@ mcd_wide['synthetic_ratio'] =  1000* mcd_wide['T40.4']/mcd_wide['population']
 
 #plot T40 Correlations
 # sns.pairplot(mcd_wide[list(T40_dict.keys())].fillna(0))
+# sns.pairplot(mcd_wide.fillna(0))
+# sns.pairplot(mcd_main.fillna(0))
 # plot t40 and t50 with economic
 # sns.pairplot(mcd_main[['poverty_rate', 'unemployment_rate']].fillna(0))
 census =mcd_main[['poverty_rate', 'unemployment_rate','household_income']]
@@ -134,3 +149,11 @@ census_std = (census - census.mean()) / census.std()
 # census.plot.scatter('poverty_rate', 'household_income')
 # plt.show()
 # create_test_df(T40,0.5, list(T40_dict.keys()))
+predictor_deaths_vs_poverty_rate = mcd_main[['T40.4', 'poverty_rate','poverty_rate_white', 'poverty_rate_african_american','poverty_rate_native_american', 'poverty_rate_asian', 'poverty_rate_pacific_islander','poverty_rate_hispanic']]
+
+predictor_deaths_vs_other = mcd_main[['T40.4', 'college_degree', 'low_income_families', 'unemployment_rate', 'disability_employed']]
+predictor_deaths_vs_other['T40.4'] = np.log(predictor_deaths_vs_other['T40.4'])
+predictor_deaths_vs_poverty_rate['T40.4'] = np.log(predictor_deaths_vs_poverty_rate['T40.4'])
+
+nice_scatter_matrix(predictor_deaths_vs_other, 'Synthetic Opioid Deaths and Other Economic Factors')
+plt.show()
