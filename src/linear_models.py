@@ -31,7 +31,9 @@ class LinearDataset:
         self.X_test =  None
         self.y_train =  None
         self.y_test =  None
-        self.name = name
+        self.type = self.model_cv.__class__.__name__
+        self.name =  self.type
+        self.hyperparameters = pd.Series()
 
 
 
@@ -69,8 +71,11 @@ class LinearDataset:
 
     def fit_cross_val(self, cv=10, alphas = None, l1_ratio = None):
         self.model_cv.fit(self.X_train, self.y_train)
-        # else:
-        #     self.model_cv = self.model_cv(cv=cv).fit(self.X_train, self.y_train)
+        if self.name in ['ElasticNetCV', 'RidgeCV', 'LassoCV']:
+            self.hyperparameters['a'] = self.model_cv.alpha_
+        if self.name == 'ElasticNetCV':
+            self.hyperparameters['l1_ratio'] = self.model_cv.l1_ratio_
+        self.name += str(dict(self.hyperparameters.round(3)))
 
 
     def plot_MSE(self, ax=plt, c_title=''):
@@ -103,7 +108,7 @@ class LinearDataset:
 
     def plot_actual_predicted(self,  ax=plt):
         """Plots model predicted values verus actual values"""
-        ax.scatter(self.model_cv.predict(self.X_train), self.y_train)
+        # ax.scatter(self.model_cv.predict(self.X_train), self.y_train)
         ax.scatter(self.model_cv.predict(self.X_test), self.y_test)
         model_name = self.model_cv.__class__.__name__
         ax.set_title(model_name + ' Actual vs. predicted')
