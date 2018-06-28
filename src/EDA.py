@@ -128,7 +128,7 @@ mcd_wide['synthetic_ratio'] =  1000* mcd_wide['T40.4']/mcd_wide['population']
 census =mcd_main[['poverty_rate', 'unemployment_rate','household_income']]
 census['household_income_log'] = np.log(census.pop('household_income'))
 census_std = (census - census.mean()) / census.std()
-sns.pairplot(census_std)
+# sns.pairplot(census_std)
 # census.plot.scatter('poverty_rate', 'unemployment_rate')
 # census.plot.scatter('household_income', 'unemployment_rate')
 # census.plot.scatter('poverty_rate', 'household_income')

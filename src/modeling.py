@@ -90,7 +90,7 @@ def test_and_train_errs(model, X_train, y_train, X_test, y_test):
 
 def plot_actual_predicted(model, X, y, ax=plt):
     """Plots model predicted values verus actual values"""
-    ax.scatter(np.log(model.predict(X)), np.log(y))
+    ax.scatter(model.predict(X)), y)
     model_name = model.__class__.__name__
     ax.set_title(model_name + ' Actual vs. predicted')
 
@@ -109,7 +109,7 @@ def find_best_models(models, X_train, y_train, X_test, y_test):
         coef_matrix[model_name] = model.coef_
         train_r2 = model.score(X_train, y_train)
         test_r2 = model.score(X_test, y_test)
-        # plot_actual_predicted(model,X_test,y_test, ax=axes[i])
+        plot_actual_predicted(model,X_test,y_test, ax=axes[i])
         rss_errors  = test_and_train_errs(model, X_train, y_train, X_test, y_test)
         error_matrix[model_name] = [train_r2, test_r2, rss_errors['train'], rss_errors['test']]
         resid_matrix[model_name] = y_train - model.predict(X_train)
@@ -146,7 +146,7 @@ print(vif)
 
 #modeling
 #create a holdout test set
-X_train, X_test, y_train, y_test = train_test_split(X_std, y, test_size=0.20)
+X_train, X_test, y_train, y_test = train_test_split(X_std, np.log(y), test_size=0.20)
 
 #initialize models
 lasso_model = LassoCV(cv=10).fit(X_train, y_train)
