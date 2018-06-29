@@ -40,8 +40,7 @@ class LinearDataset:
         self.scaler = XyScaler()
 
     def scale_X(self):
-        """Input: df = Pandas Dataframe of features to be scaled
-                 Scaler object"""
+        """Scales X and y"""
         self.scaler.fit(self.X, self.y)
         X_std, y_std = self.scaler.transform(self.X, self.y)
         self.X_std = pd.DataFrame(data=X_std, columns=self.X.columns, index=self.X.index)
@@ -51,20 +50,23 @@ class LinearDataset:
         self.X['constant'] = 1
 
     def goldfeldtquandt(self):
+        """Conducts a Goldfeldt-Quandt test for heteroscedasticity with the null hypothesis that errors are normally distributed""""
         het_F_stat, het_p_stat, z = sm.stats.diagnostic.het_goldfeldquandt(self.y, self.X)
         return {"F":het_F_stat, "p":het_p_stat}
 
     def vif(self):
-        """Returns the variance inflation factor for dataframe of features"""
+        """Returns the variance inflation factor for dataframe of features to test for multicolinearity, scores of 5 and up indicate multicolinearity"""
         vif = pd.DataFrame()
         vif["Features"] = self.X_std.columns
         vif["VIF Factor"] = [variance_inflation_factor(self.X_std.values, i) for i in range(self.X_std.shape[1])]
         return vif
 
     def test_split(self, ratio = 0.25):
+        """Splits a training set with a given ratio""""
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X_std, self.y_std, test_size=ratio, random_state=8)
 
     def log_transform_y(self):
+        """Log transforms the target vector"""
         self.y = np.log(self.y)
 
     def get_coefs(self):
@@ -73,6 +75,7 @@ class LinearDataset:
         return df
 
     def fit_cross_val(self, cv=10, alphas = None, l1_ratio = None):
+        """Fits sklearn LinearModelCV and adds hyperparameters to object name"""
         self.model_cv.fit(self.X_train, self.y_train)
         if self.name in ['ElasticNetCV', 'RidgeCV', 'LassoCV']:
             self.hyperparameters['a'] = self.model_cv.alpha_
@@ -87,7 +90,6 @@ class LinearDataset:
         m_log_alphas = -np.log10(alphas)
         ymin, ymax = self.model_cv.mse_path_.min()*0.9, self.model_cv.mse_path_.max()*1.1
         ax.plot(m_log_alphas, self.model_cv.mse_path_, ':')
-        # ax.plot(m_log_alphas, self.model_cv.mse_path_.mean(axis=-1), 'k', label='Average across the folds', linewidth=2)
         ax.axvline(-np.log10(self.model_cv.alpha_), linestyle='--', color='k',label='alpha: CV estimate')
 
         ax.legend(list(range(1, self.model_cv.mse_path_.shape[1]+1)), title='Fold')
@@ -111,13 +113,14 @@ class LinearDataset:
 
     def plot_actual_predicted(self,  ax=plt, y_log = True):
         """Plots model predicted values verus actual values"""
-        # ax.scatter(self.model_cv.predict(self.X_train), self.y_train)
-        # y_test = self.y_test
+        y_hat_test = self.y_hat_test
+        y_test = self.y_test
+
         if y_log:
             y_test = np.log(self.y_test)
-        # ax.scatter(self.model_cv.predict(self.X_test), y_test)
-        # ax.scatter(self.y_test_unstandardized,  self.y_hat_test_unstandardized)
-        ax.scatter(np.log(self.y_test),  np.log(self.y_hat_test))
+            y_hat_test = np.log(self.y_hat_test)
+
+        ax.scatter(y_test,  y_hat_test)
 
         model_name = self.model_cv.__class__.__name__
         ax.set_title(model_name + ' Actual vs. Predicted')
@@ -136,13 +139,14 @@ class LinearDataset:
         self.y_hat_test = self.model_cv.predict(self.X_test)
 
         self.X_train_unstandardized, self.y_hat_train_unstandardized = self.scaler.inverse_transform(self.X_train,self.y_hat_train)
+
         self.X_test_unstandardized, self.y_hat_test_unstandardized = self.scaler.inverse_transform(self.X_test,self.y_hat_test)
+
         self.X_test_unstandardized, self.y_test_unstandardized = self.scaler.inverse_transform(self.X_test,self.y_test)
 
 
     def test_and_train_errs(self):
         """Returns the residual sum of squares for training and test sets"""
-
 
         rss_train = self._rss(self.y_train, self.y_hat_train)
         rss_test = self._rss(self.y_test, self.y_hat_test)
@@ -153,9 +157,11 @@ class LinearDataset:
 
         r2_train = self.model_cv.score(self.X_train, self.y_train)
         r2_test = self.model_cv.score(self.X_test, self.y_test)
+
         return [r2_train, r2_test, rss_train, rss_test, rss_train_unstandardized, rss_test_unstandardized]
 
     def find_residuals(self):
+        """Returns difference of actual and predicted targets for training""""
             return self.y_train - self.model_cv.predict(self.X_train)
 
     def plot_qqplot(self):
@@ -163,6 +169,7 @@ class LinearDataset:
         qqplot(self.find_residuals())
 
     def set_up(self, y_log=True, ratio=0.35):
+        """Automates processing steps"""
         if y_log:
             self.log_transform_y()
         self.scale_X()
