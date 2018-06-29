@@ -49,7 +49,7 @@ County analysis showed that the highest overall MCD drug deaths were in Kentucky
 
 
 
-<img src='images/drug_chloropleth.png', width=800>
+<img src='images/drug_chloropleth.png' width=800>
 
 
 | county_code|            synthetic_ratio  |               county|
