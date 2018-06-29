@@ -51,7 +51,7 @@ class LinearDataset:
         self.X['constant'] = 1
 
     def goldfeldtquandt(self):
-        """Conducts a Goldfeldt-Quandt test for heteroscedasticity with the null hypothesis that errors are normally distributed""""
+        """Conducts a Goldfeldt-Quandt test for heteroscedasticity with the null hypothesis that errors are normally distributed"""
         het_F_stat, het_p_stat, z = sm.stats.diagnostic.het_goldfeldquandt(self.y, self.X)
         return {"F": het_F_stat, "p": het_p_stat}
 
@@ -64,9 +64,9 @@ class LinearDataset:
         return vif
 
     def test_split(self, ratio=0.25):
-        """Splits a training set with a given ratio""""
+        """Splits a training set with a given ratio"""
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
-            self.X_std, self.y_std, test_size=ratio, random_state=8)
+            self.X_std, self.y_std, test_size=ratio, random_state=1)
 
     def log_transform_y(self):
         """Log transforms the target vector"""
@@ -106,11 +106,11 @@ class LinearDataset:
         """Plots coefficient paths for various alphas in a cross-validation"""
         alphas = self.model_cv.alphas_
         m_log_alphas = np.log10(alphas)
-        coeffs = self.model_cv.path(self.X_train, y_train)[1]
+        coeffs = self.model_cv.path(self.X_train, self.y_train)[1]
         ymin, ymax = coeffs.min(), coeffs.max()
         ax.plot(m_log_alphas, coeffs.T)
         ax.legend(self.X_train.columns, title='Feature', loc='upper left', bbox_to_anchor=(1, 1))
-        ax._set_xlabel('log(alpha)')
+        ax.set_xlabel('log(alpha)')
         ax.set_title(c_title + ' Coefficient Descent')
         ax.set_ylim(ymin, ymax)
 
@@ -165,14 +165,14 @@ class LinearDataset:
         return [r2_train, r2_test, rss_train, rss_test, rss_train_unstandardized, rss_test_unstandardized]
 
     def find_residuals(self):
-        """Returns difference of actual and predicted targets for training""""
-            return self.y_train - self.model_cv.predict(self.X_train)
+        """Returns difference of actual and predicted targets for training"""
+        return self.y_train - self.model_cv.predict(self.X_train)
 
     def plot_qqplot(self):
         """Creates quantile-quantile plots bases on the residuals"""
         qqplot(self.find_residuals())
 
-    def set_up(self, y_log=True, ratio=0.35):
+    def set_up(self, y_log=True, ratio=0.30):
         """Automates processing steps"""
         if y_log:
             self.log_transform_y()

@@ -54,10 +54,10 @@ X = T40_complete.drop(columns=['T40.4', 'year', 'county_code', 'T40.7', 'poverty
 # X = T40_complete.drop(columns=['T40.4', 'year','T40.7', 'poverty_rate_native_american', 'poverty_rate_pacific_islander','poverty_rate'])
 # X = T40_complete[['T40.5','household_income', 'poverty_rate', 'unemployment_rate']]
 
-l1_ratio = np.linspace(0.1,1,50)
-cv=10
+l1_ratio = np.linspace(0.1,1,100)
+cv=5
 # alphas = [0.1,0.5,1,5,10]
-alphas = np.linspace(0.1,100,50)
+alphas = np.linspace(0.1,100,100)
 elastic = LinearDataset(X,y,ElasticNetCV(l1_ratio=l1_ratio), name='ElasticNet')
 
 ridge = LinearDataset(X,y,RidgeCV(cv=cv, alphas =alphas), name='Ridge')
@@ -72,7 +72,10 @@ print('\n', error_matrix)
 
 # print(tabulate(coef_matrix.round(2), headers='keys', tablefmt='pipe'))
 # print(tabulate(error_matrix.round(2), headers='keys', tablefmt='pipe'))
-all_plot_actual_predicted(models)
+# all_plot_actual_predicted(models)
+fig, ax = plt.subplots()
+lasso.plot_coeff_paths(ax=ax, c_title = 'Lasso ')
+plt.show()
 
 
 # fig, ax = plt.subplots()
