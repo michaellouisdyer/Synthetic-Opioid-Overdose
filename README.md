@@ -13,7 +13,7 @@ Variables are described in the following table:
 |     Variable                  | Description |
 |:------------------------------|-------:|
 | population                    |  County Population       |
-| T40.1                         | MCD: Heroid              |
+| T40.1                         | MCD: Heroin              |
 | T40.2                         | MCD: Other Opioids (Oxycodone, Hydrocodone)     |
 | T40.3                         | MCD: Morphine            |
 | T40.5                         | MCD: Cocaine             |
@@ -34,7 +34,7 @@ Plotting deaths over the years showed a trend where all drug deaths increased fr
 
 #### Hypothesis Testing
 A two-way analysis of variance _factors: year(2010 - 2016) X drug(cocaine, synthetic opioids))_
-df showed that while there was not a significant difference for the mean number of deaths for each drug across all years (_F_=0.07, _p_=0.79), there was a significant interaction between cocaine and synthetic deaths (_F_ = 3.75, _p_=0.08), where deaths by each drug increased by a function of each other eash subsequent year. There was a significant effect of year(_F_ = 15.73, _p_<0.01), where deaths increased from 2010 to 2016.
+showed that there was not a significant difference for the mean number of deaths for each drug across all years (_F_=0.07, _p_=0.79), nor a significant interaction between cocaine and synthetic deaths (_F_ = 3.75, _p_=0.08), where deaths by each drug increased by a function of each other eash subsequent year. There was a significant effect of year(_F_ = 15.73, _p_<0.01), where deaths increased from 2010 to 2016.
 
 #### County Statistics
 County analysis showed that the highest overall MCD drug deaths were in Kentucky and West Virginia, while Washington County was in the top five for both overall and synthetic deaths.
@@ -81,7 +81,7 @@ For census data, a scatter matrix revealed no clear associations between T40.4 a
 
 
 ## Modeling
-A subset of the data consisting of all counties with recorded non-zero synthetic opioid deaths (T40.4) in 2015 and 2016 was chosen to model on. The target consisted of each observation of T40.4 deaths, and the features were selected from the remaining drug codes (T40.1 - T40.3, T40.5 - T40.7) as well as county population, household income, and unemployment and poverty rates.
+A subset of the data consisting of all counties with recorded non-zero synthetic opioid deaths (T40.4) in 2013 - 2016 was chosen to model on. The target consisted of each observation of T40.4 deaths, and the features were selected from the remaining drug codes (T40.1 - T40.3, T40.5 - T40.7) as well as economic factors. 
 Because county X year observations were missing values, a comparison of various imputation methods resulted in a K-nearest neighbors (_k_ = 5) as the most best fit for the data. 2,960 missing values were imputed using this technique.
 The data was then standardized and tested for homoscedasticity using Goldfeld-Quandt (_F_: 1.08, _p_:0.23); residuals were visually inspected with a QQ plot:  
 <img src="images/lasso_qqplot.png" width=600>
