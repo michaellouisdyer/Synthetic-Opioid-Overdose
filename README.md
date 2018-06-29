@@ -121,7 +121,7 @@ Results showed similar test R<sup>2</sup> for all four linear models; the lasso 
 
 
 Predicted values for the test set were plotted against actual values with log transformations on both:
-<img src="./images/Actual_v_predicted_Lasso.png", width=1200>
+<img src="./images/Actual_v_predicted_Lasso.png" width=1200>
 
 
 
