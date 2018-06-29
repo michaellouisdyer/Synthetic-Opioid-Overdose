@@ -133,8 +133,7 @@ Results showed similar test R<sup>2</sup> for all four linear models; the lasso 
 | Test_R2                  |                0.469 |                                        0.453 |                  0.466 |                 0.463 |
 | Test_RSS                 |                0.522 |                                        0.542 |                  0.527 |                 0.533 |
 | Train_RSS                |                0.519 |                                        0.534 |                  0.521 |                 0.525 |
-| Unstandardized_Test_RSS  |               10.805 |                                       10.84  |                 10.821 |                10.827 |
-| Unstandardized_Train_RSS |               11.316 |                                       11.331 |                 11.327 |                11.307 |
+
 
 
 Predicted values for the test set were plotted against actual values with log transformations on both:
