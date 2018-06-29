@@ -7,7 +7,7 @@ Opioid overdoses cause the death of over 100 Americans everyday, with the number
 
 ## Data
 Overdose Data was gathered from the CDC WONDER Database using the T40 (Poisoning by narcotics and psychodysleptics) classifier for Multiple Cause of Death, by county, year(2010-2016) and drug.  
-Economic Data was gathered from the Census Bureau American Community Surveys by county and year(2015-2016).
+Economic Data was gathered from the Census Bureau American Community Surveys by county and year(2010-2016).
 Variables are described in the following table:
 
 |     Variable                  | Description |
