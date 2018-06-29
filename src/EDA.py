@@ -71,7 +71,7 @@ def create_test_df(df, p, cols_to_replace):
     x_complete = df[cols_to_replace]
     N = df.shape[0]
     M = len(cols_to_replace)
-    missing_mask = np.random.choice(a=[False, True], size=(N, M), p=[p, 1-p])
+    missing_mask = np.random.choice(a=[True, False], size=(N, M), p=[p, 1-p])
     x_incomplete =  x_complete.mask(missing_mask, other=None)
     df_incomplete = df.copy()
     df_incomplete[cols_to_replace] = x_incomplete
@@ -81,7 +81,7 @@ def determine_impute(df):
     """Iterates various imputation methods to find lower MSE"""
     algorithms = [SimpleFill(), KNN(1),KNN(2),KNN(3),KNN(4),KNN(5), IterativeSVD(),  MatrixFactorization()]
     MSE = {}
-    df_incomplete = create_test_df(df,0.3,list(T40_dict.keys()))
+    df_incomplete = create_test_df(df,0.7,list(T40_dict.keys()))
     for i, alg in enumerate(algorithms):
         print(alg)
         X_complete = impute_df(df_incomplete, alg)
@@ -152,7 +152,7 @@ mcd_wide['total_deaths'] = mcd_wide[list(T40_dict.keys())].sum(axis=1)
 mcd_wide['death_ratio'] =  1000* mcd_wide['total_deaths']/mcd_wide['population']
 mcd_wide['synthetic_ratio'] =  1000* mcd_wide['T40.4']/mcd_wide['population']
 
-find_top_counties(mcd, mcd_wide)
+# find_top_counties(mcd, mcd_wide)
 
 #correlations_
 plot_t40_associations(mcd_wide)
@@ -162,7 +162,6 @@ plot_census(mcd_main)
 deaths_by_MCD = mcd.groupby(by=['year','multiple_cause_of_death_code']).sum()['deaths'].reset_index()
 drugs_test = deaths_by_MCD.query('multiple_cause_of_death_code in ["T40.4" ,  "T40.5"]')
 print(ANOVA(drugs_test))
-
 
 #dataframe with T40 deaths as the target
 T40 = drop_nulls(mcd_main,['T40.4'])
