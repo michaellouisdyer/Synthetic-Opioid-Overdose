@@ -81,8 +81,25 @@ For census data, a scatter matrix revealed no clear associations between T40.4 a
 
 
 ## Modeling
-A subset of the data consisting of all counties with recorded non-zero synthetic opioid deaths (T40.4) in 2013 - 2016 was chosen to model on. The target consisted of each observation of T40.4 deaths, and the features were selected from the remaining drug codes (T40.1 - T40.3, T40.5 - T40.7) as well as economic factors. 
+A subset of the data consisting of all counties with recorded non-zero synthetic opioid deaths (T40.4) in 2013 - 2016 was chosen to model on. The target consisted of each observation of T40.4 deaths, and the features were selected from the remaining drug codes (T40.1 - T40.3, T40.5 - T40.7) as well as economic factors.
 Because county X year observations were missing values, a comparison of various imputation methods resulted in a K-nearest neighbors (_k_ = 5) as the most best fit for the data. 2,960 missing values were imputed using this technique.
+
+
+
+| Algorithm            |   Score |
+|:---------------------|--------:|
+| SimpleFill          |  194435 |
+| 1KNN                 |  190111 |
+| 2KNN                 |  152662 |
+| 3KNN                 |  141863 |
+| 4KNN                 |  136221 |
+| **5KNN**                 |  **132897** |
+| IterativeSVD        |  204163 |
+| MatrixFactorization |  195943 |
+
+
+
+
 The data was then standardized and tested for homoscedasticity using Goldfeld-Quandt (_F_: 1.08, _p_:0.23); residuals were visually inspected with a QQ plot:  
 <img src="images/lasso_qqplot.png" width=600>
 

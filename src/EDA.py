@@ -148,6 +148,7 @@ def plot_t40_associations(mcd_wide):
 
 mcd, mcd_main, mcd_wide=  get_all_data()
 
+mcd_wide['total_deaths'] = mcd_wide[list(T40_dict.keys())].sum(axis=1)
 mcd_wide['death_ratio'] =  1000* mcd_wide['total_deaths']/mcd_wide['population']
 mcd_wide['synthetic_ratio'] =  1000* mcd_wide['T40.4']/mcd_wide['population']
 
