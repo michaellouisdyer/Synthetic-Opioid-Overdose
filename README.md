@@ -141,7 +141,13 @@ Predicted values for the test set were plotted against actual values with log tr
 <img src="./images/Actual_v_predicted_Lasso.png" width=1200>
 
 
+###### Coefficient descent path:
+<img src="images/Coefficient_descent.png " width=1000>
 
+
+###### MSE descent path:
+
+<img src="images/Lasso_MSE_by_fold.png" width=1000>
 ### Coefficients
 
 
