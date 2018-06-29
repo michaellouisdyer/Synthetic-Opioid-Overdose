@@ -26,11 +26,12 @@ def model_comparison(X,y,models):
 
     fig, axes = plt.subplots(1,len(models))
     coef_matrix = pd.DataFrame(index = X.columns)
-    error_matrix = pd.DataFrame(index =['Train_R2','Test_R2', 'Test_RSS', 'Train_RSS'])
+    error_matrix = pd.DataFrame(index =['Train_R2','Test_R2', 'Test_RSS', 'Train_RSS', 'Unstandardized_Test_RSS', 'Unstandardized_Train_RSS'])
 
     for model in models:
         #initializes the models
         model.set_up()
+
 
         coef_matrix[model.name] = model.get_coefs()
 
@@ -48,9 +49,9 @@ def all_plot_actual_predicted(models):
 mcd_main =  get_data()
 T40 = drop_nulls(mcd_main,['T40.4'])
 T40_complete = impute_df(T40, KNN(5))
-
 y = T40_complete['T40.4']
-X = T40_complete.drop(columns=['T40.4', 'year', 'county_code'])
+X = T40_complete.drop(columns=['T40.4', 'year', 'county_code', 'T40.7', 'poverty_rate_native_american', 'poverty_rate_pacific_islander','college_degree', 'poverty_rate'])
+# X = T40_complete.drop(columns=['T40.4', 'year','T40.7', 'poverty_rate_native_american', 'poverty_rate_pacific_islander','poverty_rate'])
 # X = T40_complete[['T40.5','household_income', 'poverty_rate', 'unemployment_rate']]
 
 l1_ratio = np.linspace(0.1,1,50)
@@ -69,9 +70,9 @@ coef_matrix, error_matrix = model_comparison(X, y, models)
 print('\n', coef_matrix)
 print('\n', error_matrix)
 
+# print(tabulate(coef_matrix.round(2), headers='keys', tablefmt='pipe'))
+# print(tabulate(error_matrix.round(2), headers='keys', tablefmt='pipe'))
 all_plot_actual_predicted(models)
-# print(tabulate(coef_matrix.round(3), headers='keys', tablefmt='pipe'))
-# print(tabulate(error_matrix.round(3), headers='keys', tablefmt='pipe'))
 
 
 # fig, ax = plt.subplots()

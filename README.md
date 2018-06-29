@@ -47,44 +47,29 @@ The data was then standardized and tested for homoscedasticity using Goldfeld-Qu
 
 Multicolinearity was tested by computing the Variance Inflation Factor for each feature, given by the following table:  
 
-|        features   | VIF Factor   |
-|  --------------  | -------------
-|         population |    2.56 |
-|              T40.1 |    3.28 |
-|              T40.2 |    2.91 |
-|              T40.3 |    2.28 |
-|              T40.5 |    3.28 |
-|              T40.6 |    1.23 |
-|              T40.7 |    1.32 |
-|   household_income |    2.15 |
-|       poverty_rate |    2.67 |
-|  unemployment_rate |    1.62 |
 
 
 Cross validation of hyperparameters (n_folds = 10) of ridge, lasso and elastic net models was run and fit scores were computed for each and compared to the standard linear model
 
 ### Coefficients
 
-|                   |   LinearRegression{} |   ElasticNetCV{'a': 0.031, 'l1_ratio': 0.1} |   RidgeCV{'a': 10.0} |   LassoCV{'a': 0.019} |
-|:------------------|---------------------:|--------------------------------------------:|---------------------:|----------------------:|
-| population        |               -0.275 |                                      -0.325 |               -0.258 |                -0.22  |
-| T40.1             |                0.202 |                                       0.253 |                0.262 |                 0.206 |
-| T40.2             |                0.252 |                                       0.184 |                0.195 |                 0.19  |
-| T40.3             |               -0.074 |                                      -0.013 |                0.019 |                -0     |
-| T40.5             |                0.454 |                                       0.42  |                0.362 |                 0.385 |
-| T40.6             |                0.053 |                                       0.045 |                0.051 |                 0.022 |
-| T40.7             |               -0.052 |                                      -0.014 |               -0.02  |                -0     |
-| household_income  |                0.076 |                                       0.06  |                0.053 |                 0.049 |
-| poverty_rate      |               -0.004 |                                      -0.045 |               -0.034 |                -0.021 |
-| unemployment_rate |               -0.027 |                                       0.019 |               -0.017 |                -0     |
+Coefficients revealed that cocaine deaths were the main predictor of synthetic deaths in 2015 and 2016; followed by heroin and other opioids. In order to increase predictive power of census data and to increase model fit, more data was added from census data.
 
-### Fit Scores
+Including data from 2013- 2016
 
-|           |   LinearRegression{} |   ElasticNetCV{'a': 0.031, 'l1_ratio': 0.1} |   RidgeCV{'a': 10.0} |   LassoCV{'a': 0.019} |
-|:----------|---------------------:|--------------------------------------------:|---------------------:|----------------------:|
-| Train_R2  |                0.556 |                                       0.539 |                0.539 |                 0.542 |
-| Test_R2   |                0.425 |                                       0.485 |                0.492 |                 0.458 |
-| Test_RSS  |                0.316 |                                       0.327 |                0.326 |                 0.327 |
-| Train_RSS |                0.366 |                                       0.33  |                0.328 |                 0.342 |
-
-Coefficients revealed that cocaine deaths were the main predictor of synthetic deaths in 2015 and 2016; followed by heroin and other opioids. In order to increase predictive power of census data and to increase model fit, more data was added from census data
+| Features                      |   VIF Factor |
+|:------------------------------|-------------:|
+| population                    |        2.553 |
+| T40.1                         |        2.963 |
+| T40.2                         |        2.912 |
+| T40.3                         |        2.136 |
+| T40.5                         |        3.033 |
+| T40.6                         |        1.231 |
+| household_income              |        2.836 |
+| low_income_families           |        2.873 |
+| poverty_rate_white            |        2.831 |
+| poverty_rate_african_american |        1.777 |
+| poverty_rate_asian            |        1.344 |
+| poverty_rate_hispanic         |        1.771 |
+| unemployment_rate             |        1.489 |
+| disability_employed           |        2.761 |

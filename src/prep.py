@@ -85,4 +85,4 @@ def get_all_data():
 def get_data():
 
     mcd, mcd_main, mcd_wide =  get_all_data()
-    return mcd_main
+    return mcd_main.query('year > 2012')

@@ -10,7 +10,7 @@ import statsmodels.api as sm
 from prep import get_data
 from fancyimpute import KNN
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from pandas.plotting import scatter_matrix
 from EDA import impute_df, drop_nulls
 from statsmodels.stats.outliers_influence import variance_inflation_factor
@@ -18,13 +18,14 @@ from sklearn.linear_model import LassoCV, RidgeCV, ElasticNetCV, LinearRegressio
 from sklearn.linear_model.coordinate_descent import LinearModelCV
 from statsmodels.graphics.gofplots import qqplot
 from scipy.stats.mstats import normaltest
-
+from utils import XyScaler
 
 class LinearDataset:
     """Adds functionalities to linear_model"""
     def __init__(self, X, y, linear_modelcv, name):
         self.X = X.copy()
         self.X_std = None
+        self.y_std = None
         self.y = y.copy()
         self.model_cv = linear_modelcv
         self.X_train =  None
@@ -36,13 +37,15 @@ class LinearDataset:
         self.hyperparameters = pd.Series()
 
 
+        self.scaler = XyScaler()
 
     def scale_X(self):
         """Input: df = Pandas Dataframe of features to be scaled
                  Scaler object"""
-        scaler = StandardScaler()
-        scaler.fit(self.X)
-        self.X_std = pd.DataFrame(data=scaler.transform(self.X), columns=self.X.columns, index=self.X.index)
+        self.scaler.fit(self.X, self.y)
+        X_std, y_std = self.scaler.transform(self.X, self.y)
+        self.X_std = pd.DataFrame(data=X_std, columns=self.X.columns, index=self.X.index)
+        self.y_std = pd.Series(data=y_std)
 
     def add_constant(self):
         self.X['constant'] = 1
@@ -59,7 +62,7 @@ class LinearDataset:
         return vif
 
     def test_split(self, ratio = 0.25):
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X_std, self.y, test_size=ratio)
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X_std, self.y_std, test_size=ratio, random_state=8)
 
     def log_transform_y(self):
         self.y = np.log(self.y)
@@ -106,27 +109,51 @@ class LinearDataset:
         ax.set_title(c_title + ' Coefficient Descent')
         ax.set_ylim(ymin, ymax)
 
-    def plot_actual_predicted(self,  ax=plt):
+    def plot_actual_predicted(self,  ax=plt, y_log = True):
         """Plots model predicted values verus actual values"""
         # ax.scatter(self.model_cv.predict(self.X_train), self.y_train)
-        ax.scatter(self.model_cv.predict(self.X_test), self.y_test)
+        # y_test = self.y_test
+        if y_log:
+            y_test = np.log(self.y_test)
+        # ax.scatter(self.model_cv.predict(self.X_test), y_test)
+        # ax.scatter(self.y_test_unstandardized,  self.y_hat_test_unstandardized)
+        ax.scatter(np.log(self.y_test),  np.log(self.y_hat_test))
+
         model_name = self.model_cv.__class__.__name__
-        ax.set_title(model_name + ' Actual vs. predicted')
+        ax.set_title(model_name + ' Actual vs. Predicted')
+        ax.set_ylabel('Actual')
+        ax.set_xlabel('Predicted')
+        plt.subplots_adjust(hspace=.300, wspace=.200)
 
     def _rss(self, y, y_hat):
         """Returns the residual sum of sqaures"""
         return np.mean((y  - y_hat)**2)
 
+    def predict(self):
+        """Returns standardized and unstandardized predictions"""
+
+        self.y_hat_train = self.model_cv.predict(self.X_train)
+        self.y_hat_test = self.model_cv.predict(self.X_test)
+
+        self.X_train_unstandardized, self.y_hat_train_unstandardized = self.scaler.inverse_transform(self.X_train,self.y_hat_train)
+        self.X_test_unstandardized, self.y_hat_test_unstandardized = self.scaler.inverse_transform(self.X_test,self.y_hat_test)
+        self.X_test_unstandardized, self.y_test_unstandardized = self.scaler.inverse_transform(self.X_test,self.y_test)
+
+
     def test_and_train_errs(self):
         """Returns the residual sum of squares for training and test sets"""
-        y_hat_train = self.model_cv.predict(self.X_train)
-        y_hat_test = self.model_cv.predict(self.X_test)
-        rss_train = self._rss(self.y_train, y_hat_train)
-        rss_test = self._rss(self.y_test, y_hat_test)
-        print(self.X_train, self.y_train)
+
+
+        rss_train = self._rss(self.y_train, self.y_hat_train)
+        rss_test = self._rss(self.y_test, self.y_hat_test)
+
+        rss_train_unstandardized = self._rss(self.y_train, self.y_hat_train_unstandardized)
+        rss_test_unstandardized = self._rss(self.y_test, self.y_hat_test_unstandardized)
+
+
         r2_train = self.model_cv.score(self.X_train, self.y_train)
         r2_test = self.model_cv.score(self.X_test, self.y_test)
-        return [r2_train, r2_test, rss_train, rss_test]
+        return [r2_train, r2_test, rss_train, rss_test, rss_train_unstandardized, rss_test_unstandardized]
 
     def find_residuals(self):
             return self.y_train - self.model_cv.predict(self.X_train)
@@ -135,10 +162,11 @@ class LinearDataset:
         """Creates quantile-quantile plots bases on the residuals"""
         qqplot(self.find_residuals())
 
-    def set_up(self, y_log=True, ratio=0.25):
-        self.scale_X()
-        self.add_constant()
+    def set_up(self, y_log=True, ratio=0.35):
         if y_log:
             self.log_transform_y()
+        self.scale_X()
+        self.add_constant()
         self.test_split(ratio=ratio)
         self.fit_cross_val()
+        self.predict()

@@ -17,12 +17,12 @@ from sklearn.preprocessing import StandardScaler
 sns.set()
 #change default font sizes
 mpl.rcParams.update({
-    'font.size'           : 10.0,
-    'axes.titlesize'      : 'small',
-    'axes.labelsize'      : 'small',
-    'xtick.labelsize'     : 'small',
-    'ytick.labelsize'     : 'small',
-    'legend.fontsize'     : 'small',
+    'font.size'           : 15.0,
+    'axes.titlesize'      : 'medium',
+    'axes.labelsize'      : 'medium',
+    'xtick.labelsize'     : 'medium',
+    'ytick.labelsize'     : 'medium',
+    'legend.fontsize'     : 'medium',
 })
 
 T40_dict = {'T40.1': 'Heroin',
@@ -156,4 +156,4 @@ predictor_deaths_vs_other['T40.4'] = np.log(predictor_deaths_vs_other['T40.4'])
 predictor_deaths_vs_poverty_rate['T40.4'] = np.log(predictor_deaths_vs_poverty_rate['T40.4'])
 
 nice_scatter_matrix(predictor_deaths_vs_other, 'Synthetic Opioid Deaths and Other Economic Factors')
-plt.show()
+# plt.show()
