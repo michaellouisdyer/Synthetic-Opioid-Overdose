@@ -1,7 +1,10 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import StandardScaler
 from tabulate import tabulate
-def to_markdown(df,round_places=3):
+
+
+def to_markdown(df, round_places=3):
+    """Returns a markdown, rounded representation of a dataframe"""
     print(tabulate(df.round(round_places), headers='keys', tablefmt='pipe'))
 
 
@@ -21,7 +24,7 @@ class XyScaler(BaseEstimator, TransformerMixin):
     def transform(self, X, y, *args, **kwargs):
         """Transform a new set of data and target vector."""
         return (self.X_scaler.transform(X, copy=True),
-                self.y_scaler.transform(y.reshape(-1, 1),copy=True).flatten())
+                self.y_scaler.transform(y.reshape(-1, 1), copy=True).flatten())
 
     def inverse_transform(self, X, y, *args, **kwargs):
         """Tranform from a scaled representation back to the original scale."""
