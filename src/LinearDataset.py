@@ -132,7 +132,7 @@ class LinearDataset:
         plt.subplots_adjust(hspace=.300, wspace=.200)
 
     def _rss(self, y, y_hat):
-        """Returns the residual sum of sqaures"""
+        """Returns the residual sum of squares"""
         return np.mean((y - y_hat)**2)
 
     def predict(self):

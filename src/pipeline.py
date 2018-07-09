@@ -18,7 +18,7 @@ from sklearn.linear_model import LassoCV, RidgeCV, ElasticNetCV, LinearRegressio
 from sklearn.linear_model.coordinate_descent import LinearModelCV
 from statsmodels.graphics.gofplots import qqplot
 from scipy.stats.mstats import normaltest
-from linear_models import LinearDataset
+from LinearDataset import LinearDataset
 from tabulate import tabulate
 
 def model_comparison(X,y,models):
